@@ -7,8 +7,8 @@ const bcrypt = require('bcrypt-nodejs');
 const nutriologistSchema = new Schema({
     email: {type: String, unique:true, lowercase: true},
     password: {type: String, select: false},
-    name:{type:String},
-    lastName:{type:String},
+    name:{type:String,default:""},
+    lastName:{type:String,default:""},
     signUpDate: {type:Date, default:Date.now()},
     lastLogin: Date,
     cedProfessional: {type:String,default:""},

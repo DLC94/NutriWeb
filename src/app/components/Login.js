@@ -34,6 +34,7 @@ class Login extends Component{
             if(data.token){
                 console.log("Hay token")
                 localStorage.setItem('token',data.token)
+                localStorage.setItem('idNutriologist',data.id);
                 this.setState({auth:data.token});
             }else{
                 this.toaster.show({intent:Intent.DANGER,message:data.message});
@@ -47,7 +48,7 @@ class Login extends Component{
         let token = localStorage.getItem('token');
         //console.log(token);
         if(token){
-            return <Redirect to='/pacients' />
+            return <Redirect to='/dashboard' />
         }
         return(
             <div className="formLogin">

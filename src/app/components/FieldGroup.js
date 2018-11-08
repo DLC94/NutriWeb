@@ -16,6 +16,7 @@ class FieldGroup extends Component{
                     value={this.props.value}
                     name={this.props.name}
                     onChange={this.props.onChange}
+                    disabled={this.props.disabled}
                 />
             </FormGroup>
         )

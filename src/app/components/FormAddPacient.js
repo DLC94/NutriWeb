@@ -15,7 +15,9 @@ class FormAddPacient extends Component{
             weight: 0,
             height: 0,
             birth: moment().format('YYYY-MM-DD'),
-            pacients:[]
+            pacients:[],
+            radioValue:'',
+            email:''
         }
         //"2018-01-01"
         this.createPacient = this.createPacient.bind(this);
@@ -34,15 +36,22 @@ class FormAddPacient extends Component{
         const weight = this.state.weight;
         const height = this.state.height;
         const birth = this.state.birth;
+        const email = this.state.email;
+        const radioValue = this.state.radioValue;
         let error = false;
-        if(name === "" || lastName === "" || weight === "" || height === ""){
+        if(name === "" || lastName === "" || weight === "" || height === "" || email === "" || radioValue === ""){
             error = true;
         }
-        console.log(error)
         return error;
     }
 
     createPacient(event){
+        /*
+            BORRAR FUNCIONES QUE NO OCUPO COMO EDIT, DELETE, ETC
+            VALIDAR QUE CORREO SOLO SEA GMAIL, PARA PODER USAR EL GOOGLE FIT
+            EN EL MODELO DE PACIENT QUE CORREO SEA UNICO
+        */
+
         event.preventDefault();
         if(this.state._id){
             console.log(this.state);
@@ -70,9 +79,15 @@ class FormAddPacient extends Component{
                 this.toaster.show({intent:Intent.DANGER,message:"Favor de llenar todos los campos"});
             }else{
                 //console.log(this.state);
+                const idN = localStorage.getItem('idNutriologist');
+                const body = {
+                    name:this.state.name,lastName:this.state.lastName,
+                    weight:this.state.weight,height:this.state.height,
+                    birth:this.state.birth,gender:this.state.radioValue,
+                    email:this.state.email,idN:idN}
                 fetch('/api/pacients',{
                     method: 'POST',
-                    body: JSON.stringify(this.state),
+                    body: JSON.stringify(body),
                     headers: {
                         "Accept":'application/json',
                         "Content-Type":'application/json'
@@ -154,7 +169,7 @@ class FormAddPacient extends Component{
                 <Well>
                     <form onSubmit={(event)=>this.createPacient(event)} ref={(form)=>this.pacientForm = form}>
                         <Row>
-                            <Col xs={12} sm={12} md={12} lg={6}>
+                            <Col xs={12} sm={12} md={12} lg={5}>
                                 <FormGroup>
                                     <ControlLabel>Nombre (s)</ControlLabel>
                                     <FormControl
@@ -166,7 +181,7 @@ class FormAddPacient extends Component{
                                     />
                                 </FormGroup>
                             </Col>
-                            <Col xs={12} sm={12} md={12} lg={6}>
+                            <Col xs={12} sm={12} md={12} lg={5}>
                                 <FormGroup>
                                     <ControlLabel>Apellido(s)</ControlLabel>
                                     <FormControl
@@ -174,6 +189,24 @@ class FormAddPacient extends Component{
                                         placeholder="Apellido(s)"
                                         value={this.state.lastName}
                                         name="lastName"
+                                        onChange={this.handleChange}
+                                    />
+                                </FormGroup>
+                            </Col>
+                            <Col xs={12} sm={12} md={12} lg={2}><Grid>
+                                <FormGroup>
+                                <Row><ControlLabel>Genero</ControlLabel></Row>
+                                <Row><Radio name="radioGroup" inline onChange={()=>{this.setState({radioValue:'M'})}}>M</Radio>
+                                <Radio name="radioGroup" inline onChange={()=>{this.setState({radioValue:'F'})}}>F</Radio></Row></FormGroup></Grid>
+                            </Col>
+                            <Col xs={12} sm={12} md={12} lg={12}>
+                                <FormGroup>
+                                    <ControlLabel>Correo electronico</ControlLabel>
+                                    <FormControl 
+                                        type="email" 
+                                        placeholder="Correo" 
+                                        value={this.state.email}
+                                        name="email"
                                         onChange={this.handleChange}
                                     />
                                 </FormGroup>

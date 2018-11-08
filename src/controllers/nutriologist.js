@@ -13,10 +13,13 @@ function signUp(req,res){
     });
     
     nutriologist.save((err) => {
-        if(err) res.status(500).send({message:`Eror al crear el usuario: ${err}`})
-
-       // return res.status(200).send({token: service.createToken(user)});
-       return res.status(200).send({ token: services.createToken(nutriologist) });
+        if(err){
+            return res.status(500).send({message:`Error al crear el usuario: Correo Ya existente`})
+        }else{
+            return res.status(200).send({ token: services.createToken(nutriologist), id:nutriologist._id });
+        }
+        // return res.status(200).send({token: service.createToken(user)});
+        //aqui podriamos poner un res.locals.id = nutriologist._id; ver video de curso de node js
     });
 }
 
@@ -32,7 +35,7 @@ function signIn(req,res){
             if(!isMatch) return res.status(404).send({message:`Contrasena incorrecta`})
 
             req.user = user;
-            return res.status(200).send({message:'Te has logueado correctamente',token:services.createToken(user)});
+            return res.status(200).send({message:'Te has logueado correctamente',token:services.createToken(user),id:user._id});
         })
           
         

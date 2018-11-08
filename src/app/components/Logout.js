@@ -11,6 +11,7 @@ class Logout extends Component{
 
     componentWillMount(){
         localStorage.removeItem('token');
+        localStorage.removeItem('idNutriologist');
         this.setState({redirect:true});
     }
 

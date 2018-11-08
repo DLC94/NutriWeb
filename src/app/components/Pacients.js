@@ -79,8 +79,8 @@ class Pacients extends Component{
 
     fetchPacients(){
         this._isMounted = true;
-
-        fetch('/api/pacients')
+        const id = localStorage.getItem('idNutriologist');
+        fetch(`/api/pacients/nutriologist/${id}`)
             .then(res => res.json())
             .then(data => {
                 if(this._isMounted){

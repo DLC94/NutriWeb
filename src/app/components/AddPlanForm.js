@@ -5,7 +5,7 @@ import Select from 'react-select';
 import FieldGroup from './FieldGroup';
 import {Redirect} from 'react-router-dom';
 
-const tags = [
+/*const tags = [
     {value:1,label:"Alimento 1"},
     {value:2,label:"Alimento 2"},
     {value:3,label:"Alimento 3"},
@@ -13,7 +13,7 @@ const tags = [
     {value:5,label:"Alimento 5"},
     {value:6,label:"Alimento 6"},
     {value:7,label:"Alimento 7"}
-];
+];*/
 
 const tooltip = (
     <Tooltip id="tooltip">
@@ -23,6 +23,8 @@ const tooltip = (
 
 class AddPlanForm extends Component{
     
+    _isMounted = false;
+
     constructor(props){
         super(props);
         this.state = {
@@ -32,7 +34,8 @@ class AddPlanForm extends Component{
             foodCount:3,foodMin:3,foodMax:5,FoodList:[[],[],[],[],[]],
             comidas:[],
             filaCount:1,metasMax:5,metasMin:1,
-            metas:{"objetivos":[],"beneficios":[],"obstaculos":[],"solucion":[]}
+            metas:{"objetivos":[],"beneficios":[],"obstaculos":[],"solucion":[]},
+            optionFood:[]
         }
 
         this.handleClose = this.handleClose.bind(this);
@@ -51,6 +54,38 @@ class AddPlanForm extends Component{
         this.addFila = this.addFila.bind(this);
         this.addOtherFila = this.addOtherFila.bind(this);
         this.removeFila = this.removeFila.bind(this);
+
+        this.convertToTag = this.convertToTag.bind(this);
+    }
+
+    componentWillUnmount(){
+        this._isMounted = false;
+    }
+
+    componentDidMount(){
+       this.fetchFoods()
+    }
+
+    fetchFoods(){
+        this._isMounted = true;
+        fetch('/api/food')
+        .then(res => res.json())
+        .then(data => {
+            if(this._isMounted){
+                console.log(data);
+                this.convertToTag(data);
+            }
+        })
+        .catch(err => console.error(err))
+    }
+
+    convertToTag(data){
+        const tags = data.map(e => {
+            const name = e.alimento + ' (' + e.porcion + ')'
+            return {value:e._id,label:name}
+        })
+        this.setState({optionFood:tags});
+        console.log(this.state.optionFood);
     }
 
     agregarAlimentos(){
@@ -124,7 +159,7 @@ class AddPlanForm extends Component{
                             id="selectFood"
                             value={selectedOptions}
                             onChange={this.handleSelectChange}
-                            options={tags}
+                            options={this.state.optionFood}
                             isMulti
                         />}
                         <Button bsStyle="success" onClick={this.agregarAlimentos} className="boton-addFood">

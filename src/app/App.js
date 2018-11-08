@@ -13,6 +13,9 @@ import FormAddPacient from './components/FormAddPacient';
 import Home from './components/Home';
 import AddPlanForm from './components/AddPlanForm';
 import Logout from './components/Logout';
+import Dashboard from './components/Dashboard';
+import FoodList from './components/FoodList';
+import FormAddFood from './components/FormAddFood';
 
 class App extends Component{
 
@@ -38,6 +41,9 @@ class App extends Component{
                             <Route exact path="/pacients" render={(props)=>{
                                 return <PacientList />
                             }}/>
+                            <Route exact path="/dashboard" render={(props)=>{
+                                return <Dashboard />
+                            }}/>
                             <Route exact path="/pacients/:pacientID" render={(props)=>{
                                 const id = props.match.params.pacientID
                                 return <PacientProfile pacientID={id}/>
@@ -46,6 +52,12 @@ class App extends Component{
                                 return <FormAddPacient />
                             }}                           
                             />
+                            <Route exact path="/foods" render={(props)=>{
+                                return <FoodList/>
+                            }}/>
+                            <Route exact path="/add-food" render={(props)=>{
+                                return <FormAddFood />
+                            }}/>
                             <Route exact path="/pacients/:pacientID/add-plan" render={(props)=>{
                                 const id = props.match.params.pacientID
                                 return <AddPlanForm pacientID={id}/>

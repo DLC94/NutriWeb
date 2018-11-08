@@ -13,11 +13,25 @@ router.get('/', async (req,res)=>{
     res.json(nutriologists);
 });
 
+router.get('/:id',async (req,res) => {
+    const nutriologist = await Nutriologist.findById(req.params.id);
+    res.status(200);
+    res.json(nutriologist);
+})
+
 router.delete('/:id', async (req,res) => {
     await Nutriologist.findByIdAndDelete(req.params.id);
     res.status(200);
     res.json({status:"Nutriologo Eliminado"});
 });
+
+router.put('/:id',async (req,res)=>{
+    const {cedProfessional,email,formation,lastName,name,grade} = req.body;
+    const newData = {cedProfessional,email,formation,lastName,name,grade};
+    await Nutriologist.findByIdAndUpdate(req.params.id,newData);
+    res.status(200);
+    res.send({status:"Nutriologo Editado"});
+})
 
 router.get('/private',auth,(req,res)=>{
     res.status(200).send({ message:'Tienes Acceso' })

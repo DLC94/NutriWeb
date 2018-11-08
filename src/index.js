@@ -23,6 +23,8 @@ app.use(express.json()); // es como el body-parser
 // Routes
 app.use('/api/pacients',require('./routes/pacient.routes'));
 app.use('/api/nutriologist',require('./routes/nutriologist.routes'));
+app.use('/api/expedient',require('./routes/expedient.routes'));
+app.use('/api/food',require('./routes/food.routes'));
 
 // Static files
 //console.log(__dirname + '\public');

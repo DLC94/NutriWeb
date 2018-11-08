@@ -16,13 +16,13 @@ class Header extends Component{
                 <Navbar.Collapse>
                     {token?
                         (<Nav pullRight>
-                            <NavItem href="/">
+                            <NavItem href="/dashboard">
                                 <Glyphicon glyph="home" /> Perfil
                             </NavItem>
                             <NavItem href="/pacients">
                                 <Glyphicon glyph="user" /> Pacientes
                             </NavItem>
-                            <NavItem href="/">
+                            <NavItem href="/foods">
                                 <Glyphicon glyph="cutlery" /> Alimentos
                             </NavItem>
                             <NavItem href="/">
