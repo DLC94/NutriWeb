@@ -17,13 +17,14 @@ class FormAddPacient extends Component{
             birth: moment().format('YYYY-MM-DD'),
             pacients:[],
             radioValue:'',
-            email:''
+            email:'',
         }
         //"2018-01-01"
         this.createPacient = this.createPacient.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.deletePacient = this.deletePacient.bind(this);
         this.editPacient = this.editPacient.bind(this);
+
     }
 
     componentDidMount(){
@@ -96,11 +97,15 @@ class FormAddPacient extends Component{
                     .then(res => res.json())
                     .then(data => {
                         console.log(data)
-                        this.toaster.show({intent:Intent.SUCCESS,message:"Paciente creado"});
-                        this.setState({
-                            name:'',lastName:'',weight:0,height:0
-                        });
-                        this.fetchPacients();
+                        if(data.message){
+                            this.toaster.show({intent:Intent.DANGER,message:data.message});    
+                        }else{
+                            this.toaster.show({intent:Intent.SUCCESS,message:"Paciente creado"});
+                            this.setState({
+                                name:'',lastName:'',weight:0,height:0,email:''
+                            });
+                            this.fetchPacients();
+                        }
                     })
                     .catch(err => console.error(err))
             }

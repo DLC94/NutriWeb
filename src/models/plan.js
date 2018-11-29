@@ -7,6 +7,7 @@ const planSchema = new Schema({
     finalDate:Date,
     startDate:Date,
     goals:[],
+    date:{type:Date},
     pacient:{type: Schema.Types.ObjectId, ref:'Pacient'}
 });
 

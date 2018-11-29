@@ -4,6 +4,8 @@ import {Toaster,Intent} from '@blueprintjs/core';
 import FieldGroup from './FieldGroup';
 import {Redirect} from 'react-router-dom'
 import moment from 'moment';
+import XLSX from 'xlsx';
+import saveAs from 'file-saver';
 
 class PacientProfile extends Component{
 
@@ -30,6 +32,8 @@ class PacientProfile extends Component{
             age:0,
             gender:'M',
             email:'',
+            appointmentTime:'',
+            appointmentDate:'',
             circBrazo:0, pliegueTricipitak:0, pliegueSubescapular:0, pliegueBicipital:0, pliegueCresta:0, pliegueAbdominal:0,
             pliegueMuslo:0, plieguePantorrila:0, porcentajeGrasa:0, masaMuscular:0, porcentajeAgua:0, grasaVisceral:0, glusoca:0,
             creatininaSerica:0, urea:0, trigliceridos:0, colesterolTotal:0, HDL:0, LDL:0, VLDL:0, acidoUrico:0, hemoglobinaGlucosidala:0,
@@ -40,11 +44,92 @@ class PacientProfile extends Component{
         this.handleChange = this.handleChange.bind(this);
         this.editPacient = this.editPacient.bind(this);
         this.editeEnable = this.editeEnable.bind(this);
+        this.downloadExcel = this.downloadExcel.bind(this);
     }
 
     componentWillUnmount(){
         this._isMounted = false;
         this._isMounted2 = false;
+    }
+
+    downloadExcel(){
+        console.log('Aqui va a descargar ', this.state._id);
+        fetch(`/api/expedient/pacient/${this.state._id}`)
+        .then(res => res.json())
+        .then(data => {
+            
+            this.generateExcel(data)
+        })
+        .catch(err => console.error(err));
+    }
+
+    generateExcel(data){
+        var arreglo = data.map((pacient,i)=>{
+            return [
+                i,
+                pacient.circBrazo,pacient.pliegueTricipitak,
+                pacient.pliegueSubescapular,pacient.pliegueBicipital,
+                pacient.pliegueCresta,pacient.pliegueAbdominal,
+                pacient.pliegueMuslo,pacient.plieguePantorrila,
+                pacient.porcentajeGrasa,pacient.masaMuscular,pacient.porcentajeAgua,
+                pacient.grasaVisceral,pacient.glusoca,pacient.creatininaSerica,
+                pacient.urea,pacient.trigliceridos,pacient.colesterolTotal,pacient.HDL,
+                pacient.LDL,pacient.VLDL,pacient.acidoUrico,pacient.hemoglobinaGlucosidala,
+                pacient.numComidas,pacient.tiempoComiendo,pacient.alimentosComidas,
+                pacient.aguaDia,pacient.frutaDia,pacient.verduraDia,pacient.carneQuesoHuevoDia,
+                pacient.lecheDia,pacient.leguminosasDia,pacient.tortillaDia,
+                pacient.panDia,pacient.bolilloDia,pacient.arrozPastaAvenaTapiocaDia,pacient.refrescoDia
+            ]
+        });
+
+        console.log(arreglo)
+        const headers = [
+            "Expediente",
+            "Circ. brazo","Pliegue Tricipitak",
+            "Pliegue Subescapular","Pliegue Bicipital",
+            "Pliegue Cresta Iliaca","Pliegue Abdominal",
+            "Pliegue del Muslo","Pliegue Pantorrilla",
+            "Porcentaje de Grasa","Masa Muscular","Porcentaje Agua",
+            "Grasa Visceral","Glucosa","Creatinina Serica","Urea","Trigliceridos",
+            "Colesterol Total","HDL-Colesterol","LDL-Colesterol","VLDL-Colesterol",
+            "Acido Urico","Hemoglobina Glucosidala","Num. Comidas","Tiempo que ocupa en comer",
+            "Alimentos entre comidas","Numero de vasos Agua/Dia","Frutas/Dia",
+            "Verduras/Dia","Carne/Queso/Huevo/Dia","Leche/Dia","Leguminosas/Dia",
+            "Tortilla/Dia","Pan Dulce/Dia","Bolillo/Dia","Arroz/Pasta/Avena/Tapioca/Dia",
+            "Refrescos/Jugos Artificiales/Naturales/Dia"
+        ];
+        var dataFinal = [];
+        
+        dataFinal.push(headers);
+        
+        arreglo.forEach( e => {
+            dataFinal.push(e);
+        })
+    
+        var wb = XLSX.utils.book_new();
+        wb.Props = {
+            Title:'InformacionPaciente',
+            Subject:'Informacion de todos los pacientes',
+            CreatedDate: new Date()
+        };
+        wb.SheetNames.push('Pacientes');
+        
+        var ws_data = dataFinal;
+        var ws = XLSX.utils.aoa_to_sheet(ws_data);
+        wb.Sheets["Pacientes"] = ws;
+
+        var wbout = XLSX.write(wb, {bookType:'xlsx',type:'binary'});
+
+        saveAs(new Blob([this.s2ab(wbout)],{type:"application/octet-stream"}),`${this.state.lastName}-${this.state.name}.xlsx`);
+    }
+
+    s2ab(s){
+        var buf = new ArrayBuffer(s.length);
+        var view = new Uint8Array(buf);
+        for(var i = 0; i < s.length; i++){
+            view[i] = s.charCodeAt(i) & 0xff;
+        }
+        return buf;
     }
 
     getPacient(id){
@@ -67,7 +152,24 @@ class PacientProfile extends Component{
                     gender:data.gender==='M'?true:false,
                     email:data.email
                 })
-                this.getExpedient(this.state._id);
+                if (typeof data.appointmentDate !== "undefined") {
+                    console.log(data.appointmentDate)
+                    this.setState({appointmentDate:data.appointmentDate})
+                }
+                if (typeof data.appointmentTime !== "undefined") {
+                    console.log(data.appointmentTime)
+                    this.setState({appointmentTime:data.appointmentTime})
+                }
+                const exp = data.expedient;
+                
+                if(exp.length > 0){
+                    const idExp = exp[exp.length - 1]
+                    console.log(idExp);
+                    this.getExpedient(idExp);
+                }else{
+                    console.log("No hay nada");
+                }
+                
             }
             
         })
@@ -76,7 +178,7 @@ class PacientProfile extends Component{
 
     getExpedient(id){
         this._isMounted2 = true;
-        fetch(`/api/expedient/pacient/${id}`)
+        fetch(`/api/expedient/${id}`)
         .then(res => res.json())
         .then(data => {
             if(this._isMounted2){
@@ -129,8 +231,10 @@ class PacientProfile extends Component{
         const weight = this.state.weight;
         const height = this.state.weight;
         const birth = this.state.birth;
+        const date = this.state.appointmentDate;
+        const hour = this.state.appointmentTime;
         let error = false;
-        if(name === "" || lastName === "" || weight === "" || height === "" || birth === ""){
+        if(name === "" || lastName === "" || weight === "" || height === "" || birth === "" || date === "" || hour === ""){
             error = true;
         }
         console.log(error)
@@ -173,15 +277,35 @@ class PacientProfile extends Component{
         .catch(err => console.error(err));
     }
 
+    addExpedient(){
+        fetch('/api/expedient',{
+           method:'POST',
+           body:JSON.stringify(this.state),
+           headers: {
+            "Accept":'application/json',
+            "Content-Type":'application/json'
+            }
+        })
+        .then(res=>res.json())
+        .then(data => {
+            console.log(data)
+        })
+        .catch(err => console.error(err));
+    }
+
     editPacient(event){
         event.preventDefault();
         if(this.handleValidation()){
-            console.log("Hay error");
+            //console.log("Hay error");
             this.toaster.show({intent:Intent.DANGER,message:"Favor de llenar todos los campos"});
         }else{
-            console.log(this.state);
+            
             this.editFetch()
-            this.editExpedient();
+            this.addExpedient()
+            
+            //this.editExpedient();
+            this.setState({editable:true,checked:false});
+            
         }
     }
 
@@ -197,6 +321,12 @@ class PacientProfile extends Component{
                     <Row>
                         <Col xs={12} sm={12} md={5} lg={3} className="align-center">
                             <Image src={'https://firebasestorage.googleapis.com/v0/b/nutriapp-58aac.appspot.com/o/photo_profile%2Fprofile-picture.png?alt=media&token=3a578951-8e59-4898-a7e6-46d905235241'} responsive thumbnail />
+                            <Col style={{marginTop:"10px"}}>
+                                <Button bsStyle="success" block href={`pacients/${this.state._id}/expedients`}>Expedientes</Button>
+                            </Col>
+                            <Col style={{marginTop:"10px"}}>
+                                <Button bsStyle="success" block onClick={this.downloadExcel}>Generar Excel</Button>
+                            </Col>
                         </Col>
                         <form onSubmit={(event)=>this.editPacient(event)}>
                         <Col xs={12} sm={12} md={7} lg={9}>
@@ -369,6 +499,37 @@ class PacientProfile extends Component{
                                     </Well>
                                 </div>
                             </Collapse>
+                            <Button onClick={() => this.setState({ openPC: !this.state.openPC })} block>Proxima Cita</Button>
+                            <Collapse  in={this.state.openPC}>
+                            <div>
+                                <Well>
+                                <FormGroup>
+                                    <Row>
+                                        <Col xs={12} sm={12} md={12} lg={6}>
+                                        <ControlLabel>Fecha</ControlLabel>
+                                        <input type="date" 
+                                            className="datetime" 
+                                            disabled={this.state.editable} 
+                                            id="input-date" 
+                                            name="appointmentDate"
+                                            value={this.state.appointmentDate} 
+                                            onChange={this.handleChange}></input>
+                                        </Col>
+                                        <Col xs={12} sm={12} md={12} lg={6}>
+                                        <ControlLabel>Hora</ControlLabel>
+                                        <input type="time" 
+                                            className="datetime" 
+                                            disabled={this.state.editable} 
+                                            id="input-hour"
+                                            name="appointmentTime"
+                                            value={this.state.appointmentTime} 
+                                            onChange={this.handleChange}></input>
+                                        </Col>
+                                    </Row>
+                                </FormGroup>
+                                </Well>
+                            </div>
+                            </Collapse >
                         </div>
                         <Row>
                             <Col xs={6} sm={6} md={4} lg={2} >

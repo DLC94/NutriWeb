@@ -38,6 +38,7 @@ const expedientSchema = new Schema({
     bolilloDia:{type:Number,default:0},
     arrozPastaAvenaTapiocaDia:{type:Number,default:0},
     refrescoDia:{type:Number,default:0},
+    date:{type:Date,default:new Date()},
     pacient:{type: Schema.Types.ObjectId, ref:'Pacient'}
 });
 

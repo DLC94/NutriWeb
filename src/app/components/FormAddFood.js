@@ -2,6 +2,8 @@ import React, {Component} from 'react';
 import {Redirect} from 'react-router-dom';
 import {Grid,Row,Col,HelpBlock,Button,FormGroup,FormControl,ControlLabel,Well} from 'react-bootstrap';
 import {Toaster,Intent} from '@blueprintjs/core';
+import {app} from '../../base';
+//regla allow read, write: if request.auth != null;
 
 export default class FormAddFood extends Component{
     constructor(props){
@@ -11,17 +13,66 @@ export default class FormAddFood extends Component{
             alimento:'',
             kcal:0,
             group:'',
-            equivalente:''
+            equivalente:'',
+            image:'',
+            file:null,
+            uploadValue:0
         }
 
         this.handleChange = this.handleChange.bind(this);
+        this.handleUpload = this.handleUpload.bind(this);
+    }
+
+    idImage(){
+        const now = new Date();
+        let timestamp = now.getFullYear().toString(); 
+        timestamp += (now.getMonth() < 9 ? '0' : '') + now.getMonth().toString(); 
+        timestamp += (now.getDate() < 10 ? '0' : '') + now.getDate().toString();
+        timestamp += (now.getHours() < 10 ? '0' : '') + now.getHours().toString();
+        timestamp += (now.getMinutes() < 10 ? '0' : '') + now.getMinutes().toString();
+        timestamp += (now.getSeconds() < 10 ? '0' : '') + now.getSeconds().toString();
+        timestamp += (now.getMilliseconds() < 10 ? '0' : '') + now.getMilliseconds().toString();
+        return timestamp;
+    }
+
+    handleUpload(event){
+        const file = event.target.files[0];
+        if(file === undefined){
+            console.log('no seleccionaste nada');
+        }else{
+            this.setState({file});
+        }
+        //console.log(id+''+image.name);
     }
 
     addFood(e){
         e.preventDefault();
         //console.log(this.state);
         //poner handleValidation
-        this.addFetch();
+        //validar que si se este cargando una foto
+        const id = this.idImage();
+        const file = this.state.file;
+        const filename = id+''+file.name;
+
+        const storageRef = app.storage().ref(`/foods/${filename}`);
+        const task = storageRef.put(file);
+        
+        task.on('state_changed', snapshot => {
+            let percentage = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            this.setState({
+                uploadValue:percentage
+            });
+        }, error => {
+            console.log(error);
+            this.toaster.show({intent:Intent.DANGER,message:"Error al subir la foto"})
+        },() => {
+            let esto = this;
+            task.snapshot.ref.getDownloadURL().then(function(url){
+                esto.setState({image:url})
+                esto.addFetch();
+            });
+            
+        })
     }
 
     addFetch(){
@@ -99,10 +150,10 @@ export default class FormAddFood extends Component{
                             <Col xs={12} sm={12} md={12} lg={12}>
                             <FormGroup>
                                 <ControlLabel>Porcion</ControlLabel>
-                                <FormControl type="file" />
+                                <FormControl type="file" onChange={this.handleUpload}/>
                                 <HelpBlock>Sube una imagen de la porcion equivalente</HelpBlock>
                             </FormGroup>
-                            <progress value={50} max="100"></progress>
+                            <progress value={this.state.uploadValue} max="100"></progress>
                             </Col>
                         </Row>
                         <Row>

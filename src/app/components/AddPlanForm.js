@@ -35,7 +35,10 @@ class AddPlanForm extends Component{
             comidas:[],
             filaCount:1,metasMax:5,metasMin:1,
             metas:{"objetivos":[],"beneficios":[],"obstaculos":[],"solucion":[]},
-            optionFood:[]
+            optionFood:[],
+            obsCount:[1,1,1,1,1], obsMin:[1,1,1,1,1], obsMax:[3,3,3,3,3],
+            goals: [],
+            idPacient:''
         }
 
         this.handleClose = this.handleClose.bind(this);
@@ -55,6 +58,11 @@ class AddPlanForm extends Component{
         this.addOtherFila = this.addOtherFila.bind(this);
         this.removeFila = this.removeFila.bind(this);
 
+        //obst y sol fields
+        this.addObs = this.addObs.bind(this);
+        this.addOtherObs = this.addOtherObs.bind(this);
+        this.removeObs = this.removeObs.bind(this);
+
         this.convertToTag = this.convertToTag.bind(this);
     }
 
@@ -64,6 +72,9 @@ class AddPlanForm extends Component{
 
     componentDidMount(){
        this.fetchFoods()
+       const id = this.props.pacientID
+
+       this.setState({idPacient:id})
     }
 
     fetchFoods(){
@@ -72,7 +83,7 @@ class AddPlanForm extends Component{
         .then(res => res.json())
         .then(data => {
             if(this._isMounted){
-                console.log(data);
+                //console.log(data);
                 this.convertToTag(data);
             }
         })
@@ -85,7 +96,7 @@ class AddPlanForm extends Component{
             return {value:e._id,label:name}
         })
         this.setState({optionFood:tags});
-        console.log(this.state.optionFood);
+        //console.log(this.state.optionFood);
     }
 
     agregarAlimentos(){
@@ -131,15 +142,51 @@ class AddPlanForm extends Component{
         for(let p = 0; p < total; p++){
             const obj = document.getElementById("Objetivos"+p.toString()).value;
             const ben = document.getElementById("Beneficios"+p.toString()).value;
-            const obs = document.getElementById("Obstaculos"+p.toString()).value;
-            const sol = document.getElementById("Solucion"+p.toString()).value;
+            const obsTotal = this.state.obsCount[p];
+            const arrayObs = []
+            const arraySol = []
+            for(let q = 0; q < obsTotal; q++){
+                const obs = document.getElementById("Obstaculos"+p.toString()+""+q.toString()).value;
+                const sol = document.getElementById("Solucion"+p.toString()+""+q.toString()).value;
+                arrayObs.push(obs)
+                arraySol.push(sol)
+            }
             metas.objetivos[p] = obj;
             metas.beneficios[p] = ben;
-            metas.obstaculos[p] = obs;
-            metas.solucion[p] = sol;
+            metas.obstaculos[p] = arrayObs;
+            metas.solucion[p] = arraySol;
         }
+        //goals.push(metas)
+        let goals = []
+        goals.push(metas)
+        console.log(comidas,fend,fstart,filas,goals)
+        this.addFetch(comidas,fend,fstart,filas,goals);
+    }
 
-        console.log(comidas,fend,fstart,filas,metas)
+    addFetch(comidas,fend,fstart,filas,goals){
+        console.log(this.state.idPacient)
+        const body = {
+            foods:comidas,
+            aliments:filas,
+            finalDate:fend,
+            startDate:fstart,
+            goals:goals,
+            pacientid:this.state.idPacient
+        }
+        fetch('/api/plan',{
+            method: 'POST',
+            body: JSON.stringify(body),
+            headers: {
+                "Accept":'application/json',
+                "Content-Type":'application/json'
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            console.log(data);
+            this.toaster.show({intent:Intent.SUCCESS,message:"Plan agregado"});
+        })
+        .catch(err => console.log(err))
     }
 
     render(){
@@ -286,40 +333,30 @@ class AddPlanForm extends Component{
     //METAS y MOTIVACIONES
     addFila(i){
         return(
-            <Row key={i}>
+            <Row key={i} >
                 <Row>
-            <Col xs={12} sm={11} md={10} lg={10}>
-                <Col xs={12} sm={11} md={12} lg={12}><FormGroup>
-                    <ControlLabel>Objetivos</ControlLabel>
-                    <FormControl type="text" placeholder="Objetivos" id={"Objetivos"+i.toString()}/>
-                </FormGroup></Col>
-                <Col xs={12} sm={11} md={12} lg={12}><FormGroup>
-                    <ControlLabel>Beneficios</ControlLabel>
-                    <FormControl type="text" placeholder="Beneficios" id={"Beneficios"+i.toString()}/>
-                </FormGroup></Col>
-                <Col xs={12} sm={11} md={12} lg={12}><FormGroup>
-                    <ControlLabel>Obstaculos 
-                        <OverlayTrigger placement="right" overlay={tooltip}><Glyphicon style={{marginLeft:"10px"}} glyph="info-sign"/></OverlayTrigger>
-                    </ControlLabel>
-                    <FormControl type="text" placeholder="Obstaculos" id={"Obstaculos"+i.toString()} />
-                </FormGroup></Col>
-                <Col xs={12} sm={11} md={12} lg={12}><FormGroup>
-                    <ControlLabel>Solucion 
-                        <OverlayTrigger placement="right" overlay={tooltip}><Glyphicon style={{marginLeft:"10px"}} glyph="info-sign"/></OverlayTrigger>
-                    </ControlLabel>
-                    <FormControl type="text" placeholder="Solucion" id={"Solucion"+i.toString()}/>
-                </FormGroup></Col>
-                
-            </Col>
-            </Row>
-            <hr className="hr-plan"/>
-            <Row>
-            {(i+1)===this.state.filaCount?
-            <Col xs={12} sm={11} md={12} lg={12}>
-                <Button bsStyle="success" onClick={this.addOtherFila} disabled={this.state.filaCount===this.state.metasMax?true:false}>Nuevo Objetivo</Button>
-                <Button bsStyle="danger" onClick={this.removeFila} disabled={this.state.filaCount===this.state.metasMin?true:false}>Eliminar Objetivo</Button>
-            </Col>:null}
-            </Row>
+                <Col xs={12} sm={11} md={10} lg={10}>
+                    <Col xs={12} sm={11} md={12} lg={12}><FormGroup>
+                        <ControlLabel>Objetivos</ControlLabel>
+                        <FormControl type="text" placeholder="Objetivos" id={"Objetivos"+i.toString()}/>
+                    </FormGroup></Col>
+                    <Col xs={12} sm={11} md={12} lg={12}><FormGroup>
+                        <ControlLabel>Beneficios</ControlLabel>
+                        <FormControl type="text" placeholder="Beneficios" id={"Beneficios"+i.toString()}/>
+                    </FormGroup></Col>
+                    
+                    {this.obsInput(i)}
+                    
+                </Col>
+                </Row>
+                <hr className="hr-plan"/>
+                <Row>
+                {(i+1)===this.state.filaCount?
+                <Col xs={12} sm={11} md={12} lg={12}>
+                    <Button bsStyle="success" onClick={this.addOtherFila} disabled={this.state.filaCount===this.state.metasMax?true:false}>Nuevo Objetivo</Button>
+                    <Button bsStyle="danger" onClick={this.removeFila} disabled={this.state.filaCount===this.state.metasMin?true:false}>Eliminar Objetivo</Button>
+                </Col>:null}
+                </Row>
             </Row>
         );
     }
@@ -348,6 +385,55 @@ class AddPlanForm extends Component{
         var count = this.state.filaCount;
         for(let i = 0; i < count; i++){
             rows.push(this.addFila(i));
+        }
+        return rows;
+    }
+    
+    //OBSTACULOS y SOLUCIONES
+    addObs(i,j){
+        return(
+            <Row key={i} style={{marginLeft:0,marginRight:0}}>
+                <Col xs={12} sm={11} md={6} lg={5}><FormGroup>
+                    <ControlLabel>Obstaculos</ControlLabel>
+                    <FormControl type="text" placeholder="Obstaculos" id={"Obstaculos"+j.toString()+""+i.toString()} />
+                </FormGroup></Col>
+                <Col xs={12} sm={11} md={6} lg={5}><FormGroup>
+                    <ControlLabel>Solucion</ControlLabel>
+                    <FormControl type="text" placeholder="Solucion" id={"Solucion"+j.toString()+""+i.toString()}/>
+                </FormGroup></Col>
+                {(i+1)===this.state.obsCount[j]?
+                <Col xs={12} sm={11} md={2} lg={2} style={{marginTop:"20px"}}>
+                    <Button bsStyle="success" onClick={()=>{this.addOtherObs(j)}} disabled={this.state.obsCount[j]===this.state.obsMax[j]?true:false}>+</Button>
+                    <Button bsStyle="danger" onClick={()=>{this.removeObs(j)}} disabled={this.state.obsCount[j]===this.state.obsMin[j]?true:false}>-</Button>
+                </Col>:null}
+            </Row>
+        )
+    }
+
+    addOtherObs(i){
+        var count = this.state.obsCount[i];
+        if(count < this.state.obsMax[i]){
+            const counts = this.state.obsCount;
+            counts[i] = count+1
+            this.setState({obsCount:counts})
+        }
+    }
+
+    removeObs(i){
+        var count = this.state.obsCount[i]
+        if(count > this.state.obsMin[i]){
+            const counts = this.state.obsCount;
+            counts[i] = count-1
+            this.setState({obsCount:counts})
+        }
+    }
+    
+
+    obsInput(j){
+        var rows = [];
+        var count = this.state.obsCount[j];
+        for(let i = 0; i < count; i++){
+            rows.push(this.addObs(i,j))
         }
         return rows;
     }

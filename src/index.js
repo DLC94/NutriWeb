@@ -25,6 +25,7 @@ app.use('/api/pacients',require('./routes/pacient.routes'));
 app.use('/api/nutriologist',require('./routes/nutriologist.routes'));
 app.use('/api/expedient',require('./routes/expedient.routes'));
 app.use('/api/food',require('./routes/food.routes'));
+app.use('/api/plan',require('./routes/plan.routes'));
 
 // Static files
 //console.log(__dirname + '\public');

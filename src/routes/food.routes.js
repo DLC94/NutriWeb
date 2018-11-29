@@ -9,6 +9,20 @@ router.get('/', async (req,res)=>{
     res.json(foods);
 });
 
+router.get('/:id',async(req,res)=>{
+    const food = await Food.findById(req.params.id);
+    res.status(200);
+    res.json(food);
+});
+
+router.put('/:id',async(req,res)=>{
+    const {porcion,alimento,kcal,group,equivalente} = req.body;
+    const newData = {porcion,alimento,kcal,group,equivalente};
+    await Food.findByIdAndUpdate(req.params.id,newData);
+    res.status(200);
+    res.send({message:"Alimento actualizado"});
+})
+
 router.post('/',async (req,res)=>{
     const {porcion,alimento,kcal,group,equivalente,image} = req.body;
 

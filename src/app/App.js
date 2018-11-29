@@ -3,6 +3,7 @@ import Header from './components/Header';
 import PacientProfile from './components/PacientProfile';
 import Login from './components/Login';
 import SignUp from './components/SignUp';
+import Food from './components/Food';
 
 import {BrowserRouter,Route,Redirect, Switch} from 'react-router-dom';
 
@@ -16,6 +17,7 @@ import Logout from './components/Logout';
 import Dashboard from './components/Dashboard';
 import FoodList from './components/FoodList';
 import FormAddFood from './components/FormAddFood';
+import Expedients from './components/Expedients';
 
 class App extends Component{
 
@@ -55,6 +57,11 @@ class App extends Component{
                             <Route exact path="/foods" render={(props)=>{
                                 return <FoodList/>
                             }}/>
+                            <Route exact path="/foods/:foodID" render={(props)=>{
+                                const id = props.match.params.foodID
+                                return <Food foodID={id}/>
+                            }}
+                            />
                             <Route exact path="/add-food" render={(props)=>{
                                 return <FormAddFood />
                             }}/>
@@ -62,6 +69,11 @@ class App extends Component{
                                 const id = props.match.params.pacientID
                                 return <AddPlanForm pacientID={id}/>
                             }}/>
+                            <Route exact path="/pacients/:pacientID/expedients" render={(props)=>{
+                                const id = props.match.params.pacientID
+                                return <Expedients pacientID={id}/>
+                            }}
+                            />
                             <Route exact path="/logout" render={(props)=>{
                                 return <Logout />
                             }}/>

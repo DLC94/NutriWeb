@@ -69,7 +69,7 @@ export default class FoodList extends Component{
                         <strong><h5>{food}</h5></strong>
                     </Col>
                     <Col xs={3} sm={2} md={2} lg={2}>
-                        <Button href={"/food/"+id}><Glyphicon glyph="pencil"/></Button>
+                        <Button href={"/foods/"+id}><Glyphicon glyph="pencil"/></Button>
                         <Button onClick={()=>{this.deleteFood(id)}}><Glyphicon glyph="trash"/></Button>
                     </Col>
                 </Row>

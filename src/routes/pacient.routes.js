@@ -2,18 +2,20 @@ const express = require('express');
 const router = express.Router();
 const nodemailer = require('nodemailer');
 const xoauth2 = require('xoauth2');
+const smtpTransport = require('nodemailer-smtp-transport');
 
+//contra judith.ortega@    JyRSYr
+//contra 
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host:'smtp.gmail.com',
+    port:465,
+    secure:true,
     auth:{
-        xoauth2: xoauth2.createXOAuth2Generator({
-            user: 'nutriapp.download@gmail.com',
-            clientId:'137661556278-6cl3khp1g2gm8a97dht8448d7o6h54dv.apps.googleusercontent.com',
-            clientSecret:'5fZdVQ4w-nFyqoaTo1I1wYvw',
-            refreshToken: ''
-        })
-        //user:'nutriapp.download@gmail.com',
-        //password:'Luismiguel123'
+        type:'OAuth2',
+        user: 'nutriapp.download@gmail.com',
+        clientId:'567783844777-3ta3sg8n6uup183eq44r9kr8c6qdcf5p.apps.googleusercontent.com',
+        clientSecret:'XUbhKM6CpGeIMDrlThEX_4m2',
+        refreshToken: '1/cZ1dSDzO_1IpTyuuoi7JxtU0vUjJUrg_KTxOmECampW8XBpe-RlQnNSHW33FDGnV'
     }
 })
 
@@ -22,6 +24,10 @@ const auth = require('../middlewares/auth')
 const Pacient = require('../models/pacients');
 const Nutriologist = require('../models/nutriologist');
 const Expedient = require('../models/expedient');
+
+const pacientCtrl = require('../controllers/pacient');
+
+const generator = require('generate-password');
 
 
 //aqui puedo poner varios auth para que solo tengan acceso a ellos los que estan autorizados
@@ -42,39 +48,39 @@ router.get('/nutriologist/:idN',async (req,res)=>{
 
 router.post('/',async (req,res)=>{
     const {name,lastName,weight,height,birth,gender,email,idN} = req.body;
-    /*const pacient = new Pacient({name,lastName,weight,height,birth});
-    await pacient.save();
-    res.status(200);
-    res.json(pacient);*/
-    
     await Nutriologist.findById(idN,(err,nutriologist)=>{
-        if (err) return err;
-
-        const pacient = new Pacient({name,lastName,weight,height,birth,gender,email,nutriologist:nutriologist._id});
+        if (err) {
+            console.log(err);
+            return err;
+        }
+        const password = generator.generate({length:6,numbers:true});
+        
+        const pacient = new Pacient({name,lastName,weight,height,birth,gender,email,nutriologist:nutriologist._id,password});
+        
+        
+        //const fecha = new Date();
+        //const expedient = new Expedient({pacient:pacient._id,date:fecha});
         nutriologist.pacients.push(pacient._id);
-        const expedient = new Expedient({pacient:pacient._id});
-        pacient.expedient.push(expedient._id);
+        
         nutriologist.save(function (err){
-            if(err) return err;
+            if(err){ 
+                console.log('error: ', err);
+                return err
+            }
 
             pacient.save(function (err){
-                if (err) return err;
+                if (err) return res.status(500).send({message:`Error al crear el usuario: Correo Ya existente`});;
 
-                console.log(pacient.email)
-                /*const mailOption = {
-                    from: 'nutriapp.download@gmail.com',
+                const mailOption = {
+                    from: 'NutriWeb',//'nutriapp.download@gmail.com',
                     to:pacient.email,
-                    subject:'Prueba Envio mensaje Node js',
-                    text:'Esto solo es una prueba. Aqui ira el link para descargar la app'
+                    subject:'Link Descarga NutriApp',
+                    text:`Hola ${pacient.name}. Esto solo es una prueba. Aqui ira el link para descargar la app. Tu contrasena para ingresar a la aplicacion es ${password}`
                 }
                 transporter.sendMail(mailOption,function(error,info){
                     if(error) console.log(error)
                     else console.log('El mensaje se ha enviado: ' + info.response)
-                })*/
-                expedient.save(function (err){
-                    if(err) return err;
                 })
-
 
                 res.status(200);
                 res.json(pacient);
@@ -93,8 +99,8 @@ router.get('/:id',async (req,res) => {
 });
 
 router.put('/:id',async (req,res) => {
-    const {name,lastName,weight,height,birth} = req.body;
-    const newData = {name,lastName,weight,height,birth};
+    const {name,lastName,weight,height,birth,appointmentDate,appointmentTime} = req.body;
+    const newData = {name,lastName,weight,height,birth,appointmentDate,appointmentTime};
     await Pacient.findByIdAndUpdate(req.params.id,newData);
     res.status(200);
     res.send({status:"Paciente editado"});
@@ -106,6 +112,7 @@ router.delete('/:id', async (req,res) => {
     res.json({status:"Paciente Eliminado"});
 });
 
+router.post('/signin',pacientCtrl.signIn)
 
 module.exports = router;
 
