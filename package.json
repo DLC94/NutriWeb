@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
-    "webpack": "webpack --mode development --watch"
+    "webpack": "webpack --mode development --watch",
+    "build":"webpack --mode production"
   },
   "author": "Carlos De la Cruz",
   "license": "ISC",
@@ -24,6 +25,7 @@
     "file-saver": "^2.0.0",
     "firebase": "^5.5.8",
     "generate-password": "^1.4.1",
+    "jspdf": "^1.5.3",
     "jwt-simple": "^0.5.5",
     "moment": "^2.22.2",
     "mongoose": "^5.3.4",

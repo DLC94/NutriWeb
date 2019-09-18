@@ -5,12 +5,12 @@ class Header extends Component{
     
     render(){
         let token = localStorage.getItem('token')
-        let url = window.location.pathname;
+       /* let url = window.location.pathname;
         console.log(url);
         if(url === '/'){
             console.log('raiz');
             return null;
-        }else{
+        }else{*/
             return (
                 <Navbar inverse collapseOnSelect>
                     <Navbar.Header>
@@ -45,7 +45,7 @@ class Header extends Component{
                     </Navbar.Collapse>
                 </Navbar>
             );
-        }
+        //}
     }
 
 }

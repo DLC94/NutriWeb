@@ -11,6 +11,11 @@
     border-radius: 4px
 }
 
+.datetime:disabled {
+  background-color: #eee;
+  opacity: 1;
+}
+
 .align-center{
     text-align: center;
 }

@@ -4,7 +4,7 @@ const SECRET_TOKEN = 'miclavedetokens';
 
 function createToken(user){
     const payload = {
-        sub: user._id, //este habra que cambiarlo
+        sub: user._id, 
         iat: moment().unix(),
         exp: moment().add(14,'days').unix(),
     }

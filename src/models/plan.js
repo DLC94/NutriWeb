@@ -4,8 +4,8 @@ const {Schema} = mongoose;
 const planSchema = new Schema({
     foods:[],
     aliments:[],
-    finalDate:Date,
-    startDate:Date,
+    finalDate:String,
+    startDate:String,
     goals:[],
     date:{type:Date},
     pacient:{type: Schema.Types.ObjectId, ref:'Pacient'}

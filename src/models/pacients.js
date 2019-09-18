@@ -15,7 +15,10 @@ const pacientSchema = new Schema({
     appointmentTime:String,
     expedient:[{type: Schema.Types.ObjectId, ref:'Expedient'}],
     plan:{type:Schema.Types.ObjectId,ref:'Plan'},
-    password:{type:String, select:false}
+    password:{type:String, select:false},
+    folio:{type:String,required:true},
+    numNot:{type:Number,default:0},
+    notVis:{type:Number,default:0}
 });
 
 pacientSchema.pre('save',function(next){
@@ -37,6 +40,7 @@ pacientSchema.pre('save',function(next){
 pacientSchema.methods.comparePassword = function(candidatePassword,cb){
     bcrypt.compare(candidatePassword,this.password,(err,isMatch)=>{
         console.log(this.password,candidatePassword);
+        console.log("aqui")
         cb(err,isMatch)
     })
 }

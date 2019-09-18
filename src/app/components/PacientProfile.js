@@ -6,11 +6,13 @@ import {Redirect} from 'react-router-dom'
 import moment from 'moment';
 import XLSX from 'xlsx';
 import saveAs from 'file-saver';
+import jspdf from 'jspdf'
 
 class PacientProfile extends Component{
 
     _isMounted = false;
     _isMounted2 = false;
+    _isMounted3 = false;
 
     constructor(props){
         super(props);
@@ -32,6 +34,8 @@ class PacientProfile extends Component{
             age:0,
             gender:'M',
             email:'',
+            goals:[],
+            plan:'',
             appointmentTime:'',
             appointmentDate:'',
             circBrazo:0, pliegueTricipitak:0, pliegueSubescapular:0, pliegueBicipital:0, pliegueCresta:0, pliegueAbdominal:0,
@@ -45,11 +49,49 @@ class PacientProfile extends Component{
         this.editPacient = this.editPacient.bind(this);
         this.editeEnable = this.editeEnable.bind(this);
         this.downloadExcel = this.downloadExcel.bind(this);
+
+        this.savePDF = this.savePDF.bind(this);
     }
 
     componentWillUnmount(){
         this._isMounted = false;
         this._isMounted2 = false;
+        this._isMounted3 = false;
+    }
+
+    savePDF(){
+        //console.log(this.state.name,this.state.lastName,this.state.goals)
+        
+        if(this.state.goals.length === 0){
+            this.toaster.show({intent:Intent.DANGER,message:"No podemos generar el pdf, porque el paciente aun no cuenta con un plan"});
+        }else{
+            console.log(this.state.goals)
+            const goals = this.state.goals[0];
+            const x = 15 
+            let y = 50
+            var doc = new jspdf();
+            doc.setFontSize(12)
+            doc.text(`En este contrato, yo, ${this.state.name} ${this.state.lastName}, declaro mi voluntad de obtener los siguientes beneficios.`,x,y,{maxWidth: 175, align: "justify"});
+            y+=15;
+            goals["beneficios"][0].forEach((e,i) => {
+                doc.text(`> ${e}`,x+5,y,{maxWidth: 175, align: "justify"});
+                y+=12;
+            });
+            doc.text(`Para obtener estos beneficios, yo me propongo como objetivo segui al pie de la letra el tratamiento nutricional que diseñaron para mí. Me propongo este objetivo estando consciente de que no será fácil de lograr, y será necesario comprometerme con este objetivo. Por esta razón, considerando los obstáculos que seguramente encontraré, me comprometo a lo siguiente: `,x,y,{maxWidth: 175, align: "justify"})
+            y+=30;
+            goals["compromiso"][0].forEach((e,i)=>{
+                doc.text(`> ${e}`,x+5,y,{maxWidth: 175, align: "justify"});
+                y+=12;
+            })
+            y+=10;
+            doc.text('Firmo este contrato de compromiso con mi propia salud, sabiendo que cuando logre estos compromisos mi vida sera mejor.',x,y,{maxWidth: 175, align: "justify"});
+            y+=20;
+            doc.text('___________________',x,y)
+            y+=10;
+            doc.text(`${this.state.name} ${this.state.lastName}`,x+5,y);
+            
+            doc.save(`${this.state.lastName}-${this.state.name}.pdf`);
+        }
     }
 
     downloadExcel(){
@@ -169,6 +211,14 @@ class PacientProfile extends Component{
                 }else{
                     console.log("No hay nada");
                 }
+
+                const plan = data.plan;
+                if(typeof plan != "undefined"){
+                    console.log(plan)
+                    this.getPlan(plan)
+                }else{
+                    console.log("No hay plan");
+                }
                 
             }
             
@@ -200,6 +250,19 @@ class PacientProfile extends Component{
                 });
             }
         });
+    }
+
+    getPlan(id){
+        this._isMounted3 = true;
+        fetch(`/api/plan/${id}`)
+        .then(res => res.json())
+        .then(data => {
+            if(this._isMounted3){
+                this.setState({
+                    goals:data.goals
+                })
+            }
+        })
     }
 
     componentDidMount(){
@@ -543,6 +606,11 @@ class PacientProfile extends Component{
                             </Col>
                             <Col xs={12} sm={12} md={4} lg={5} style={{marginTop:"10px"}}>
                                 <Button bsStyle="success" block href={`pacients/${this.state._id}/add-plan`}>Agregar Plan</Button>
+                            </Col>
+                        </Row>
+                        <Row>   
+                            <Col xs={12} sm={12} md={12} lg={12}>
+                                <Button bsStyle="success" block onClick={this.savePDF}>Descargar PDF</Button>
                             </Col>
                         </Row>
                         </Col>

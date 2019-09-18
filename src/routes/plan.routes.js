@@ -47,7 +47,7 @@ router.post('/',async(req,res)=>{
 router.delete('/:id',async(req,res)=>{
     await Plan.findByIdAndRemove(req.params.id);
     res.status(200);
-    res.json({status:"Plan Eliminado"})
+    res.json({status:"Plan Eliminado"});
 });
 
 module.exports = router

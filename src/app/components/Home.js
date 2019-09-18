@@ -1,71 +1,99 @@
-import React, {Component} from 'react';
-import AnchorLink from 'react-anchor-link-smooth-scroll';
+import React, { Component } from 'react';
+import {Grid,Row,Col,Image,Well,PageHeader,Tab,Nav,NavItem,Glyphicon,Button} from 'react-bootstrap';
+import '../App.css'
+//import QRCode from '../assets/qrimg.png';
 
-import {Navbar,Nav,NavItem,Glyphicon,Row,Col} from 'react-bootstrap';
+const QRCode = 'https://firebasestorage.googleapis.com/v0/b/nutriapp-58aac.appspot.com/o/qrimg.png?alt=media&token=725e820c-520d-4951-8af9-39fa9e80b337'
 
 class Home extends Component{
+    
+    constructor(props){
+        super(props);
+
+        this.state = {
+            key:1
+        };
+
+        this.handleSelect = this.handleSelect.bind(this);
+    }
+
+    handleSelect(key){
+        this.setState({key});
+        console.log(key,this.state.key)
+    }
+
+    componentWillMount(){
+        console.log("Me monte");
+    }
+
+    componentWillUnmount(){
+        console.log("Me desmonte");
+    }
+
     render(){
         return(
-            <div>
-                {/*<div className="navBar">
-                    <AnchorLink href='#inicio'>Inicio</AnchorLink>
-                    <AnchorLink  href='#conocenos'>Conocenos</AnchorLink>
-                    <AnchorLink  href='#ofrecemos'>Que te ofrecemos</AnchorLink>
-                </div>*/}
-                <Navbar inverse collapseOnSelect className="navbar-home" staticTop>
-                    <Navbar.Header>
-                        <Navbar.Brand>
-                            <a href="/" style={{color:'white'}}>NutriApp</a>
-                        </Navbar.Brand>
-                        <Navbar.Toggle/>
-                    </Navbar.Header>
-                    <Navbar.Collapse>
-                        <Nav pullRight >
-                                <NavItem >
-                                    <AnchorLink href='#inicio' className="linkHome">Inicio</AnchorLink>
-                                </NavItem>
-                                <NavItem >
-                                    <AnchorLink  href='#conocenos' className="linkHome">Conocenos</AnchorLink>
-                                </NavItem>
-                                
-                            </Nav>
-                    </Navbar.Collapse>
-                </Navbar>
-
-                <div>
-                    <section id='inicio' style={{backgroundColor:'#f9f9f9'}} className='fullScreenHeight'>
-                        <div className="BGImg"></div>
-                        <div className="bg-text">
-                            <h1>NutriApp</h1>                            
-                            <p>
-                                Tu Applicacion para seguimiento dietetico.
-                            </p>
-                        </div>
-                    </section>
-                    <section id='conocenos' style={{backgroundColor:'#f5f5f5',padding:20}} className='fullScreenHeight centerElements'>
-                        <div style={{flex:2}}>
-                            <h3>Que es NutriApp</h3>
-                            <p>
-                                It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy.
-                            </p>
-                            <div>
-                                <img className="img-download" src="http://nutriapp.com.co/wp-content/uploads/2018/01/02images.png"/>
-                                <img className="img-download" src="http://nutriapp.com.co/wp-content/uploads/2018/01/01images.png"/>
-                            </div>
-                        </div>
-                        <div style={{flex:1}}>
-                            <img className="img-cel" src="https://cdn130.picsart.com/253669595019212.png?r1024x1024"/>
-                        </div>
-                    </section>
-                    {/*
-                    <NavItem >
-                                    <AnchorLink  href='#ofrecemos' className="linkHome">Que te ofrecemos</AnchorLink>
-                                </NavItem><section id='ofrecemos' style={{backgroundColor:'yellow'}} className='fullScreenHeight centerElements'>
-                        <h3>Que te ofrecemos</h3>
-            </section>*/}
-                </div>
-            </div>
-        )
+            <Grid>
+                <Well>
+                    <Row>
+                        <Col xs={12} sm={12} md={12} lg={12}>
+                            <PageHeader>Como descargar si NutriApp.</PageHeader>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col xs={12} sm={12} md={12} lg={12}>
+                            <Tab.Container id="tabs-nutriapp" activeKey={this.state.key} onSelect={this.handleSelect}>
+                                <Row className="clearfix">
+                                    <Col xs={12} sm={12} md={12} lg={12}>
+                                        <Nav bsStyle="pills" justified>
+                                            <NavItem disabled eventKey={1}>Habilita fuentes desconocidas <Glyphicon glyph="check"/></NavItem>
+                                            <NavItem disabled eventKey={2}>Descarga e Instalar <Glyphicon glyph="download"/></NavItem>
+                                        </Nav>
+                                    </Col>
+                                    <Col xs={12} sm={12} md={12} lg={12} style={{marginTop:"20px"}}>
+                                        <Tab.Content animation>
+                                            <Tab.Pane eventKey={1}>
+                                                <Col xs={12} sm={12} md={12} lg={12}>
+                                                <p>
+                                                    Antes de instalar la aplicacion, debemos habilitar la opcion <strong>Origenes Desconocidos</strong>.
+                                                </p>
+                                                <p>
+                                                    Para lograrlo en tu telefono vamos a <strong>Ajustes</strong>.
+                                                    Una vez dentro de ajustes seleccionamos <strong>Seguridad</strong>.
+                                                    Finalmente habilitamos la opcion <strong>Origenes Desconocidos</strong>.
+                                                </p>
+                                                </Col>
+                                                <Col xs={12} sm={12} md={12} lg={12}>
+                                                <Button onClick={()=>{this.handleSelect(2)}}>Siguiente</Button>
+                                                </Col>
+                                            </Tab.Pane>
+                                            <Tab.Pane eventKey={2}>
+                                                <Col xs={12} sm={12} md={6} lg={6}>
+                                                    <p>Escanea el siguiente codigo QR para descargar la app.</p>
+                                                    <p>O da clic <strong><a href="https://drive.google.com/file/d/1ovOmw1svBw9zqOcTWIpE1VXCNlP3fd_-/view?usp=sharing">Aqui</a></strong></p>
+                                                    
+                                                    <p>Una vez se haya realizado la descarga, dar clic en instalar.</p>
+                                                    <p><strong>*NOTA: App solo disponible para Android 4.5 en adelante</strong></p>
+                                                </Col>
+                                                <Col xs={12} sm={12} md={6} lg={6}>
+                                                    <Image className="img-center"
+                                                        src={QRCode} responsive rounded
+                                                    />
+                                                </Col>
+                                                <Col xs={12} sm={12} md={12} lg={12}>
+                                                <Button onClick={()=>{this.handleSelect(1)}}>Atras</Button>
+                                                </Col>
+                                            </Tab.Pane>
+                                        </Tab.Content>
+                                    </Col>
+                                </Row>
+                            </Tab.Container>
+                        </Col>
+                    </Row>
+                    
+                </Well>
+            </Grid>
+            
+        );
     }
 }
 

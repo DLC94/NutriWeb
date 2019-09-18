@@ -74,6 +74,10 @@ router.put('/:id', async(req,res)=>{
     res.send({status:"Expediente editado"});
 });
 
+router.delete("/",async(req,res)=>{
+
+})
+
 router.delete('/:id', async (req,res) => {
     //await Expedient.findByIdAndRemove(req.params.id);
     const id = req.params.id;

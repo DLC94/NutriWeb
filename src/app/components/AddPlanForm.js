@@ -15,6 +15,11 @@ import {Redirect} from 'react-router-dom';
     {value:7,label:"Alimento 7"}
 ];*/
 
+/*
+falta agregar campo compromiso
+falta 5 beneficios
+ */
+
 const tooltip = (
     <Tooltip id="tooltip">
         <strong>Separe por comas (,) para agregar mas obstaculos y/o soluciones</strong>
@@ -34,9 +39,9 @@ class AddPlanForm extends Component{
             foodCount:3,foodMin:3,foodMax:5,FoodList:[[],[],[],[],[]],
             comidas:[],
             filaCount:1,metasMax:5,metasMin:1,
-            metas:{"objetivos":[],"beneficios":[],"obstaculos":[],"solucion":[]},
+            metas:{"objetivos":[],"beneficios":[],"obstaculos":[],"solucion":[],"compromiso":[]},
             optionFood:[],
-            obsCount:[1,1,1,1,1], obsMin:[1,1,1,1,1], obsMax:[3,3,3,3,3],
+            obsCount:[5,5,5,5,5], obsMin:[1,1,1,1,1], obsMax:[5,5,5,5,5],
             goals: [],
             idPacient:''
         }
@@ -141,25 +146,38 @@ class AddPlanForm extends Component{
         const total = this.state.filaCount;
         for(let p = 0; p < total; p++){
             const obj = document.getElementById("Objetivos"+p.toString()).value;
-            const ben = document.getElementById("Beneficios"+p.toString()).value;
+            //const ben = document.getElementById("Beneficios"+p.toString()).value;
             const obsTotal = this.state.obsCount[p];
             const arrayObs = []
             const arraySol = []
+            const arrayBen = []
+            const arrayCom = []
             for(let q = 0; q < obsTotal; q++){
                 const obs = document.getElementById("Obstaculos"+p.toString()+""+q.toString()).value;
                 const sol = document.getElementById("Solucion"+p.toString()+""+q.toString()).value;
+                const ben = document.getElementById("Beneficio"+p.toString()+""+q.toString()).value;
+                const comp = document.getElementById("Compromiso"+p.toString()+""+q.toString()).value;
                 arrayObs.push(obs)
                 arraySol.push(sol)
+                arrayBen.push(ben)
+                arrayCom.push(comp)
             }
             metas.objetivos[p] = obj;
-            metas.beneficios[p] = ben;
+            //metas.beneficios[p] = ben;
+            metas.beneficios[p] = arrayBen;
             metas.obstaculos[p] = arrayObs;
             metas.solucion[p] = arraySol;
+            metas.compromiso[p] = arrayCom;
         }
         //goals.push(metas)
         let goals = []
         goals.push(metas)
-        console.log(comidas,fend,fstart,filas,goals)
+        //console.log(comidas,fend,fstart,filas,goals)
+        console.log(comidas)
+        console.log(fend)
+        console.log(fstart)
+        console.log(filas)
+        console.log(goals)
         this.addFetch(comidas,fend,fstart,filas,goals);
     }
 
@@ -337,13 +355,13 @@ class AddPlanForm extends Component{
                 <Row>
                 <Col xs={12} sm={11} md={10} lg={10}>
                     <Col xs={12} sm={11} md={12} lg={12}><FormGroup>
-                        <ControlLabel>Objetivos</ControlLabel>
+                        <ControlLabel>Objetivo</ControlLabel>
                         <FormControl type="text" placeholder="Objetivos" id={"Objetivos"+i.toString()}/>
                     </FormGroup></Col>
-                    <Col xs={12} sm={11} md={12} lg={12}><FormGroup>
+                    {/*<Col xs={12} sm={11} md={12} lg={12}><FormGroup>
                         <ControlLabel>Beneficios</ControlLabel>
                         <FormControl type="text" placeholder="Beneficios" id={"Beneficios"+i.toString()}/>
-                    </FormGroup></Col>
+                    </FormGroup></Col>*/}
                     
                     {this.obsInput(i)}
                     
@@ -351,11 +369,11 @@ class AddPlanForm extends Component{
                 </Row>
                 <hr className="hr-plan"/>
                 <Row>
-                {(i+1)===this.state.filaCount?
+                {/*(i+1)===this.state.filaCount?
                 <Col xs={12} sm={11} md={12} lg={12}>
                     <Button bsStyle="success" onClick={this.addOtherFila} disabled={this.state.filaCount===this.state.metasMax?true:false}>Nuevo Objetivo</Button>
                     <Button bsStyle="danger" onClick={this.removeFila} disabled={this.state.filaCount===this.state.metasMin?true:false}>Eliminar Objetivo</Button>
-                </Col>:null}
+                </Col>:null*/}
                 </Row>
             </Row>
         );
@@ -393,19 +411,27 @@ class AddPlanForm extends Component{
     addObs(i,j){
         return(
             <Row key={i} style={{marginLeft:0,marginRight:0}}>
-                <Col xs={12} sm={11} md={6} lg={5}><FormGroup>
-                    <ControlLabel>Obstaculos</ControlLabel>
+                <Col xs={12} sm={11} md={6} lg={3}><FormGroup>
+                    <ControlLabel>Beneficio {i+1}</ControlLabel>
+                    <FormControl type="text" placeholder="Beneficio" id={"Beneficio"+j.toString()+""+i.toString()}/>
+                </FormGroup></Col>
+                <Col xs={12} sm={11} md={6} lg={3}><FormGroup>
+                    <ControlLabel>Obstaculo {i+1}</ControlLabel>
                     <FormControl type="text" placeholder="Obstaculos" id={"Obstaculos"+j.toString()+""+i.toString()} />
                 </FormGroup></Col>
-                <Col xs={12} sm={11} md={6} lg={5}><FormGroup>
-                    <ControlLabel>Solucion</ControlLabel>
+                <Col xs={12} sm={11} md={6} lg={3}><FormGroup>
+                    <ControlLabel>Solucion {i+1}</ControlLabel>
                     <FormControl type="text" placeholder="Solucion" id={"Solucion"+j.toString()+""+i.toString()}/>
                 </FormGroup></Col>
-                {(i+1)===this.state.obsCount[j]?
+                <Col xs={12} sm={11} md={6} lg={3}><FormGroup>
+                    <ControlLabel>Compromiso {i+1}</ControlLabel>
+                    <FormControl type="text" placeholder="Compromiso" id={"Compromiso"+j.toString()+""+i.toString()}/>
+                </FormGroup></Col>
+                {/*(i+1)===this.state.obsCount[j]?
                 <Col xs={12} sm={11} md={2} lg={2} style={{marginTop:"20px"}}>
                     <Button bsStyle="success" onClick={()=>{this.addOtherObs(j)}} disabled={this.state.obsCount[j]===this.state.obsMax[j]?true:false}>+</Button>
                     <Button bsStyle="danger" onClick={()=>{this.removeObs(j)}} disabled={this.state.obsCount[j]===this.state.obsMin[j]?true:false}>-</Button>
-                </Col>:null}
+                </Col>:null*/}
             </Row>
         )
     }

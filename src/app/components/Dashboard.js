@@ -4,6 +4,8 @@ import {Grid,Row,Col,Image,Button,FormGroup,FormControl,ControlLabel,Well} from 
 import FieldGroup from './FieldGroup';
 import {Toaster,Intent} from '@blueprintjs/core';
 
+//https://nutriapp-58aac.firebaseio.com/
+
 class Dashboard extends Component{
 
     _isMounted = false;
@@ -54,6 +56,7 @@ class Dashboard extends Component{
 
     componentDidMount(){
         this.getNutriologist();
+        
     }
 
     editeEnable(){

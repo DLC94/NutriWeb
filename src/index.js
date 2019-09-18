@@ -7,6 +7,16 @@ const path = require('path');
 const { mongoose } = require('./database');
 
 // Settings
+
+if(process.env.NODE_ENV === "production"){
+    //set static folder
+    app.use(express.static('client/build'));
+
+    app.get('*',(req,res)=>{
+        res.sendFile(path.resolve(__dirname,'src','build','index.html'));
+    });
+}
+
 app.set('port', process.env.PORT || 3000);
 
 
@@ -26,6 +36,7 @@ app.use('/api/nutriologist',require('./routes/nutriologist.routes'));
 app.use('/api/expedient',require('./routes/expedient.routes'));
 app.use('/api/food',require('./routes/food.routes'));
 app.use('/api/plan',require('./routes/plan.routes'));
+app.use('/api/folio',require('./routes/folioid.routes'))
 
 // Static files
 //console.log(__dirname + '\public');

@@ -3,6 +3,8 @@ import {Grid,Row,Col,Button,FormGroup,FormControl,ControlLabel,Well,Radio,Table,
 import {Toaster,Intent} from '@blueprintjs/core';
 import moment from 'moment';
 
+//falta agregar tabla para vincular folio con id, y campo folio en paciente
+
 class FormAddPacient extends Component{
     
     constructor(props){
@@ -11,13 +13,14 @@ class FormAddPacient extends Component{
         this.state = {
             _id:'',
             name: '',
-            lastName: '',
+            lastName: '.',
             weight: 0,
             height: 0,
             birth: moment().format('YYYY-MM-DD'),
             pacients:[],
-            radioValue:'',
+            radioValue:'M',
             email:'',
+            folio:''
         }
         //"2018-01-01"
         this.createPacient = this.createPacient.bind(this);
@@ -39,8 +42,9 @@ class FormAddPacient extends Component{
         const birth = this.state.birth;
         const email = this.state.email;
         const radioValue = this.state.radioValue;
+        const folio = this.state.folio
         let error = false;
-        if(name === "" || lastName === "" || weight === "" || height === "" || email === "" || radioValue === ""){
+        if(folio === "" || name === "" || lastName === "" || weight === "" || height === "" || email === "" || radioValue === ""){
             error = true;
         }
         return error;
@@ -52,8 +56,14 @@ class FormAddPacient extends Component{
             VALIDAR QUE CORREO SOLO SEA GMAIL, PARA PODER USAR EL GOOGLE FIT
             EN EL MODELO DE PACIENT QUE CORREO SEA UNICO
         */
-
-        event.preventDefault();
+       event.preventDefault();
+       /*if(this.handleValidation()){
+            console.log("Hay un error");
+            this.toaster.show({intent:Intent.DANGER,message:"Favor de llenar todos los campos"});
+        }else{
+            console.log(this.state.folio,this.state.name,this.state.lastName,this.state.email,this.state.height,this.state.weight,this.state.radioValue)
+        }*/
+        
         if(this.state._id){
             console.log(this.state);
             fetch(`/api/pacients/${this.state._id}`,{
@@ -81,7 +91,7 @@ class FormAddPacient extends Component{
             }else{
                 //console.log(this.state);
                 const idN = localStorage.getItem('idNutriologist');
-                const body = {
+                const body = {folio:this.state.folio,
                     name:this.state.name,lastName:this.state.lastName,
                     weight:this.state.weight,height:this.state.height,
                     birth:this.state.birth,gender:this.state.radioValue,
@@ -102,7 +112,7 @@ class FormAddPacient extends Component{
                         }else{
                             this.toaster.show({intent:Intent.SUCCESS,message:"Paciente creado"});
                             this.setState({
-                                name:'',lastName:'',weight:0,height:0,email:''
+                                name:'',lastName:'',weight:0,height:0,email:'',folio:''
                             });
                             this.fetchPacients();
                         }
@@ -174,7 +184,19 @@ class FormAddPacient extends Component{
                 <Well>
                     <form onSubmit={(event)=>this.createPacient(event)} ref={(form)=>this.pacientForm = form}>
                         <Row>
-                            <Col xs={12} sm={12} md={12} lg={5}>
+                        	<Col xs={12} sm={12} md={12} lg={2}>
+                        		<FormGroup>
+                        			<ControlLabel>Folio</ControlLabel>
+                                    <FormControl
+                                        type="text"
+                                        placeholder="Folio"
+                                        value={this.state.folio}
+                                        name="folio"
+                                        onChange={this.handleChange}
+                                    />
+                        		</FormGroup>
+                        	</Col>
+                            <Col xs={12} sm={12} md={12} lg={4}>
                                 <FormGroup>
                                     <ControlLabel>Nombre (s)</ControlLabel>
                                     <FormControl
@@ -186,7 +208,7 @@ class FormAddPacient extends Component{
                                     />
                                 </FormGroup>
                             </Col>
-                            <Col xs={12} sm={12} md={12} lg={5}>
+                            <Col xs={12} sm={12} md={12} lg={4}>
                                 <FormGroup>
                                     <ControlLabel>Apellido(s)</ControlLabel>
                                     <FormControl
@@ -195,14 +217,15 @@ class FormAddPacient extends Component{
                                         value={this.state.lastName}
                                         name="lastName"
                                         onChange={this.handleChange}
+                                        disabled={true}
                                     />
                                 </FormGroup>
                             </Col>
                             <Col xs={12} sm={12} md={12} lg={2}><Grid>
-                                <FormGroup>
+                                <FormGroup >
                                 <Row><ControlLabel>Genero</ControlLabel></Row>
-                                <Row><Radio name="radioGroup" inline onChange={()=>{this.setState({radioValue:'M'})}}>M</Radio>
-                                <Radio name="radioGroup" inline onChange={()=>{this.setState({radioValue:'F'})}}>F</Radio></Row></FormGroup></Grid>
+                                <Row><Radio disabled={true} name="radioGroup" inline onChange={()=>{this.setState({radioValue:'M'})}}>M</Radio>
+                                <Radio disabled={true} name="radioGroup" inline onChange={()=>{this.setState({radioValue:'F'})}}>F</Radio></Row></FormGroup></Grid>
                             </Col>
                             <Col xs={12} sm={12} md={12} lg={12}>
                                 <FormGroup>
@@ -220,6 +243,7 @@ class FormAddPacient extends Component{
                                 <FormGroup>
                                     <ControlLabel>Peso (Kg)</ControlLabel>
                                     <FormControl
+                                        disabled={true}
                                         type="number"
                                         placeholder="Peso"
                                         value={this.state.weight}
@@ -232,6 +256,7 @@ class FormAddPacient extends Component{
                                 <FormGroup>
                                     <ControlLabel>Altura (Cm)</ControlLabel>
                                     <FormControl
+                                        disabled={true}
                                         type="number"
                                         placeholder="Altura"
                                         value={this.state.height}
@@ -244,6 +269,7 @@ class FormAddPacient extends Component{
                                 <FormGroup>
                                     <ControlLabel>Fecha de nacimiento</ControlLabel>
                                     <input type="date" 
+                                        disabled={true}
                                         className="datetime" 
                                         id="input-birth" 
                                         value={this.state.birth} 
