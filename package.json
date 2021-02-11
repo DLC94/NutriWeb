@@ -15,7 +15,7 @@
   "dependencies": {
     "@babel/core": "^7.1.2",
     "@blueprintjs/core": "^3.7.0",
-    "apexcharts": "^2.2.3",
+    "apexcharts": "^3.24.0",
     "babel-loader": "^8.0.4",
     "bcrypt": "^3.0.2",
     "bcrypt-nodejs": "0.0.3",
