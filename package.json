@@ -27,7 +27,7 @@
     "generate-password": "^1.4.1",
     "jspdf": "^1.5.3",
     "jwt-simple": "^0.5.5",
-    "moment": "^2.22.2",
+    "moment": "^2.29.4",
     "mongoose": "^5.7.5",
     "morgan": "^1.9.1",
     "nodemailer": "^4.6.8",
