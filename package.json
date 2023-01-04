@@ -13,7 +13,7 @@
   "author": "Carlos De la Cruz",
   "license": "ISC",
   "dependencies": {
-    "@babel/core": "^7.1.2",
+    "@babel/core": "^7.20.12",
     "@blueprintjs/core": "^3.7.0",
     "apexcharts": "^2.2.3",
     "babel-loader": "^8.0.4",
